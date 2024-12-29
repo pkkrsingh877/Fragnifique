@@ -1,0 +1,40 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Ignore node_modules (both frontend and backend)
+node_modules/
+
+# Ignore build folders
+# For frontend build (production build) and backend build if exists
+frontend/build/
+backend/dist/
+
+# Ignore environment variable files (.env files)
+# This will ignore all .env files in both frontend and backend
+.env
+.env.local
+.env.production
+.env.development
+
+# Ignore local environment files that might be generated (such as .env.local)
+*.local
+
+# Ignore IDE/Editor-specific files
+.vscode/*
+!.vscode/extensions.json  # If you want to keep vscode settings like extensions
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Ignore temp files
+*.tmp
