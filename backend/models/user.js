@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
         minLength: [8, 'Password must be at least 8 characters long'],
         maxLength: [64, 'Password cannot be more than 64 characters long'],
     },
+    isSeller: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true });
 
 userSchema.methods.matchPassword = async function (enteredPassword) {

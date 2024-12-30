@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import 'dotenv/config.js';
 
 // Connect to MongoDB
@@ -22,6 +23,9 @@ import productRoutes from './routes/product.js';
 import reviewRoutes from './routes/review.js';
 
 const app = express();
+
+// Cors Middleware
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

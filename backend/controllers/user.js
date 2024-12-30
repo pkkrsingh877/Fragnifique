@@ -43,7 +43,7 @@ export const login = async (req, res) => {
 
 export const signup = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, isSeller } = req.body;
         const user = await User.findOne({ email });
 
         if (user) {
@@ -55,7 +55,7 @@ export const signup = async (req, res) => {
         }
 
         const newUser = new User({
-            name, email, password
+            name, email, password, isSeller
         });
         await newUser.save();
 
