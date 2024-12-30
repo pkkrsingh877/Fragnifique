@@ -25,7 +25,10 @@ import reviewRoutes from './routes/review.js';
 const app = express();
 
 // Cors Middleware
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:5173'], // Replace with your frontend's URL
+    credentials: true
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

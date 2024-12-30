@@ -26,11 +26,15 @@ export const login = async (req, res) => {
 
         const token = await jwt.sign({ id: user._id, email: user.email, name: user.name }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
+        // Set cookie
+        res.cookie("token", token, {
+            sameSite: false
+        });
+
         return res.status(200).json({
             success: true,
             message: "Login successful",
-            data: user,
-            token
+            data: user
         });
     } catch (error) {
         return res.status(400).json({
@@ -61,11 +65,15 @@ export const signup = async (req, res) => {
 
         const token = await jwt.sign({ id: newUser._id, email: newUser.email, name: newUser.name }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
+        // Set cookie
+        res.cookie("token", token, {
+            sameSite: false
+        });
+
         return res.status(201).json({
             success: true,
             message: "Signup successful",
-            data: newUser,
-            token
+            data: newUser
         });
     } catch (error) {
         return res.status(400).json({

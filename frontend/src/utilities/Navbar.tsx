@@ -30,7 +30,8 @@ const Navbar = () => {
             <div className={`${isOpen ? 'block' : 'hidden'} w-full p-4 text-center top-full`}>
                 <Link to="/products" className="block mb-4">SHOP</Link>
                 <Link to="/about" className="block mb-4">ABOUT</Link>
-                <Link to="/login" className="block mb-4">LOGIN</Link>
+                <Link to="/account/login" className="block mb-4">LOGIN</Link>
+                <Link to="/account/signup" className="block mb-4">SIGNUP</Link>
             </div>
         </div>
     );

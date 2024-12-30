@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+axios.defaults.withCredentials = true;
 
 export default function Signup() {
     const [user, setUser] = useState({
