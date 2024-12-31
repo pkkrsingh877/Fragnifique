@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import 'dotenv/config.js';
+import cookieParser from 'cookie-parser';
 
 // Connect to MongoDB
 
@@ -24,11 +25,26 @@ import reviewRoutes from './routes/review.js';
 
 const app = express();
 
+
+app.use(cookieParser());
 // Cors Middleware
 app.use(cors({
-    origin: ['http://localhost:5173'], // Replace with your frontend's URL
-    credentials: true
+    origin: 'http://localhost:5173', // Replace with your frontend's URL
+    credentials: true, // Allow cookies/credentials
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow the methods your app needs
+    allowedHeaders: ['Content-Type', 'Authorization'], // Specify which headers are allowed in the request
 }));
+
+// Handle preflight request explicitly for certain methods
+app.options('*', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173'); // Match the origin
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Allowed methods
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Allowed headers
+    res.setHeader('Access-Control-Allow-Credentials', 'true'); // Allow credentials
+    res.status(200).end(); // End the response to the OPTIONS request
+});
+
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

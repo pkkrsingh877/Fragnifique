@@ -1,9 +1,7 @@
-import { createContext, useState, useContext, ReactNode } from 'react';
+import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import Cookies from 'js-cookie';
 import axios from 'axios';
-
 axios.defaults.withCredentials = true;
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 // Define types for User and Context
 interface User {
@@ -18,6 +16,7 @@ interface UserContextType {
     setLoggedInUser: React.Dispatch<React.SetStateAction<User | null>>;
     login: (user: LoginUser) => Promise<LoginResponse>;
     signup: (user: SignupUser) => Promise<SignupResponse>;
+    verifyToken: () => Promise<boolean>
 }
 
 interface LoginUser {
@@ -54,7 +53,7 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
 
     const login = async (user: LoginUser): Promise<LoginResponse> => {
         try {
-            const response = await axios.post(`${apiBaseUrl}/api/users/login`, user);
+            const response = await axios.post(`/api/users/login`, user);
             if (response) {
                 console.log('Login successful:', response.data);
                 const { _id, name, email, isSeller } = response.data.data;
@@ -71,7 +70,7 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
 
     const signup = async (user: SignupUser): Promise<SignupResponse> => {
         try {
-            const response = await axios.post(`${apiBaseUrl}/api/users/signup`, user);
+            const response = await axios.post(`/api/users/signup`, user);
             if (response) {
                 console.log('Signup successful:', response.data);
                 const { _id, name, email, isSeller } = response.data.data;
@@ -85,8 +84,36 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
         return { success: false, error: 'Unknown error' };
     };
 
+    const verifyToken = async (): Promise<boolean> => {
+        try {
+            const token = Cookies.get('token');
+            const response = await axios.get(`/api/users/verifyToken`, {
+                headers: {
+                    Authorization: `Bearer ${token}` // Include token if necessary
+                }
+            });
+            if (response && response.data.success) {
+                // If the token is valid, you can set the user in state
+                const { _id, name, email, isSeller } = response.data.data;
+                setLoggedInUser({ _id, name, email, isSeller });
+                return true;
+            }
+        } catch (error) {
+            console.error('Token verification error:', error);
+            return false;
+        }
+        return false;
+    };
+
+    // Using useEffect to run verifyToken when the component mounts
+    useEffect(() => {
+        if (!loggedInUser) {
+            verifyToken(); // Verify token only if the user is not already logged in
+        }
+    }, []);
+
     return (
-        <UserContext.Provider value={{ loggedInUser, setLoggedInUser, login, signup }}>
+        <UserContext.Provider value={{ loggedInUser, setLoggedInUser, login, signup, verifyToken }}>
             {children}
         </UserContext.Provider>
     );

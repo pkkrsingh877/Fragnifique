@@ -20,10 +20,10 @@ export const getProduct = async (req, res) => {
 
 export const postProduct = async (req, res) => {
     try {
-        const { name, description, price, images, user } = req.body;
+        const { name, description, price, quantity, unit, totalCount, images, user } = req.body;
 
         const product = new Product({
-            name, description, price, images, user
+            name, description, price, images, user, unit, totalCount, quantity
         });
         await product.save();
 

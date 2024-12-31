@@ -13,6 +13,20 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    quantity: {
+        type: Number,
+        required: true
+    },
+    unit: {
+        type: String,
+        required: true,
+        default: 'ml'
+    },
+    totalCount: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     images: [{
         type: String
     }],

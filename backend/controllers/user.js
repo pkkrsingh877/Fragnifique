@@ -24,7 +24,7 @@ export const login = async (req, res) => {
             });
         }
 
-        const token = await jwt.sign({ id: user._id, email: user.email, name: user.name }, process.env.JWT_SECRET, { expiresIn: '30d' });
+        const token = await jwt.sign({ _id: user._id, email: user.email, name: user.name }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
         // Set cookie
         res.cookie("token", token, {
@@ -63,7 +63,7 @@ export const signup = async (req, res) => {
         });
         await newUser.save();
 
-        const token = await jwt.sign({ id: newUser._id, email: newUser.email, name: newUser.name }, process.env.JWT_SECRET, { expiresIn: '30d' });
+        const token = await jwt.sign({ _id: newUser._id, email: newUser.email, name: newUser.name }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
         // Set cookie
         res.cookie("token", token, {
