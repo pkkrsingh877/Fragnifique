@@ -74,7 +74,7 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
             const response = await axios.post(`${apiBaseUrl}/api/users/signup`, user);
             if (response) {
                 console.log('Signup successful:', response.data);
-                const { _id, name, email, isSeller } = response.data;
+                const { _id, name, email, isSeller } = response.data.data;
                 setLoggedInUser({ _id, name, email, isSeller });
                 return { success: true };
             }
