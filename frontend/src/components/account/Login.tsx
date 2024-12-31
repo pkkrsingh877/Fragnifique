@@ -1,27 +1,18 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
-axios.defaults.withCredentials = true;
+import { useUserContext } from '../../context/UserContext';
 
 export default function Login() {
-    const [user, setUser] = useState({
-        email: '',
-        password: ''
-    });
+    const [user, setUser] = useState({ email: '', password: '' });
+    const { login } = useUserContext();
     const navigate = useNavigate();
 
     const handleSubmit = async () => {
-        try {
-            const response = await axios.post(`${apiBaseUrl}/api/users/login`, user);
-            if (response) {
-                console.log('Login successful:', response);
-                navigate('/');
-            } else {
-                throw Error("Login failed");
-            }
-        } catch (error) {
-            console.error('Login error:', error);
+        const result = await login(user);
+        if (result.success) {
+            navigate('/');
+        } else {
+            console.error('Login failed:', result.error);
         }
     };
 
