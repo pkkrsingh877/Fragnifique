@@ -48,6 +48,8 @@ export default function Product() {
     const [existingReview, setExistingReview] = useState<Review | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+    const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
+
     // Fetch product details by ID and fetch reviews separately
     const fetchProduct = async () => {
         try {
@@ -58,7 +60,9 @@ export default function Product() {
             setReviews(response.data.data.reviews); // Set reviews state from response
 
             // Check if the logged-in user has already reviewed the product
-            const userReview = response.data.data.reviews.find((review: Review) => review.user._id === loggedInUser?._id);
+            const userReview = response.data.data.reviews.find(
+                (review: Review) => review.user._id === loggedInUser?._id
+            );
             setExistingReview(userReview || null);
             if (userReview) {
                 setRating(userReview.rating);
@@ -100,27 +104,102 @@ export default function Product() {
         }
     };
 
+    const handleNextImage = () => {
+        if (currentImageIndex < product.images.length - 1) {
+            setCurrentImageIndex(currentImageIndex + 1);
+        } else {
+            setCurrentImageIndex(0); // Loop back to first image
+        }
+    };
+
+    const handlePrevImage = () => {
+        if (currentImageIndex > 0) {
+            setCurrentImageIndex(currentImageIndex - 1);
+        } else {
+            setCurrentImageIndex(product.images.length - 1); // Loop back to last image
+        }
+    };
+
+    const handleShare = (platform: string) => {
+        const productUrl = `${window.location.origin}/products/${product._id}`;
+        const message = `Check out this product: ${product.name} - ${productUrl}`;
+        switch (platform) {
+            case 'whatsapp':
+                window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+                break;
+            case 'twitter':
+                window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(productUrl)}&text=${encodeURIComponent(product.name)}`, '_blank');
+                break;
+            default:
+                break;
+        }
+    };
+
     useEffect(() => {
         fetchProduct();
     }, [id, loggedInUser]);
 
     return (
         <div className="flex flex-col items-center gap-8 p-8 bg-palette-primary text-palette-highlight">
-            {/* Product Details */}
-            <h1 className="text-2xl font-bold">{product.name}</h1>
-            <div className="w-50 max-w-lg">
-                <div className="relative overflow-hidden">
-                    <div className="flex transition-transform">
+            {/* Product Details Card */}
+            <div className="max-w-4xl w-full p-6 bg-palette-primary shadow-highlight rounded-lg hover:shadow-xl transition-shadow duration-300">
+                <h1 className="text-3xl font-heading text-palette-neutral mb-6">{product.name}</h1>
+
+                {/* Carousel Section */}
+                <section className="mt-6 relative w-full overflow-hidden">
+                    <div className="flex transition-transform" style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}>
                         {product.images.map((image, index) => (
-                            <img key={index} src={image} alt={`Product Image ${index + 1}`} className="w-full object-cover" />
+                            <div key={index} className="w-full flex-shrink-0">
+                                <img
+                                    src={image}
+                                    alt={`Product Image ${index + 1}`}
+                                    className="w-full h-96 object-cover rounded-lg"
+                                />
+                            </div>
                         ))}
                     </div>
+
+                    {/* Left and Right Buttons for Carousel */}
+                    <button
+                        onClick={handlePrevImage}
+                        className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black text-white p-2 rounded-full shadow-lg hover:bg-palette-highlight transition duration-300"
+                    >
+                        &#8592;
+                    </button>
+                    <button
+                        onClick={handleNextImage}
+                        className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black text-white p-2 rounded-full shadow-lg hover:bg-palette-highlight transition duration-300"
+                    >
+                        &#8594;
+                    </button>
+                </section>
+
+                {/* Product Description */}
+                <p className="text-lg text-palette-highlight mt-4">{product.description}</p>
+                <p className="text-xl font-bold text-palette-neutral mt-4">₹{product.price}</p>
+                <p className="text-lg text-palette-highlight mt-2">{product.quantity} {product.unit}</p>
+                {
+                    product.totalCount <= 100 ? (
+                        <>
+                            <p className="text-lg text-palette-highlight mt-2">Hurry! Only {product.totalCount} left</p>
+                        </>
+                    ) : (
+                        <>
+                            <p className="text-lg text-palette-highlight mt-2">In Stock: {product.totalCount} </p>
+                        </>
+                    )
+                }
+
+                {/* Share Buttons */}
+                <div className="mt-4 flex space-x-4">
+                    <button onClick={() => handleShare('whatsapp')} className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+                        Share on WhatsApp
+                    </button>
+                    <button onClick={() => handleShare('twitter')} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                        Share on Twitter
+                    </button>
                 </div>
             </div>
-            <p className="text-lg">{product.description}</p>
-            <p className="text-xl font-bold mt-4">Price: ₹{product.price}</p>
-            <p className="text-lg mt-2">Quantity: {product.quantity} {product.unit}</p>
-            <p className="text-lg mt-2">Total Count: {product.totalCount}</p>
 
             {/* Reviews Section */}
             {reviews.length > 0 && (
