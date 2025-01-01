@@ -1,13 +1,17 @@
 import Product from '../models/product.js';
+import Review from '../models/review.js';
 
 export const getProduct = async (req, res) => {
     try {
         const { id } = req.params;
         const product = await Product.findById(id);
+        const reviews = await Review.find({ product: id })
+            .populate('user')
+            .select('-password -email -__v -isSeller');
         res.status(200).json({
             success: true,
             message: "Product fetched successfully",
-            data: product
+            data: { product, reviews }
         });
     } catch (error) {
         res.status(404).json({

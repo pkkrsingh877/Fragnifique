@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
     return (
-        <footer className="flex flex-row justify-evenly py-16 px-8 bg-palette-neutral text-palette-accent">
+        <footer className="hidden lg:flex flex-row justify-evenly py-16 px-8 bg-palette-neutral text-palette-accent">
             <div className="flex flex-col gap-y-8">
                 <div className="grid grid-cols-3 gap-x-8">
                     <Link to="#">Contact</Link>

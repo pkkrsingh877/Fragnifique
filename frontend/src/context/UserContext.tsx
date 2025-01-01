@@ -16,7 +16,8 @@ interface UserContextType {
     setLoggedInUser: React.Dispatch<React.SetStateAction<User | null>>;
     login: (user: LoginUser) => Promise<LoginResponse>;
     signup: (user: SignupUser) => Promise<SignupResponse>;
-    verifyToken: () => Promise<boolean>
+    verifyToken: () => Promise<boolean>;
+    logout: () => void; // Add logout method type
 }
 
 interface LoginUser {
@@ -58,7 +59,6 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
                 console.log('Login successful:', response.data);
                 const { _id, name, email, isSeller } = response.data.data;
                 setLoggedInUser({ _id, name, email, isSeller });
-                console.log(loggedInUser)
                 return { success: true };
             }
         } catch (error) {
@@ -105,6 +105,19 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
         return false;
     };
 
+    // Logout method
+    const logout = () => {
+        // Remove the token from cookies
+        Cookies.remove('token');
+
+        // Clear the loggedInUser state
+        setLoggedInUser(null);
+
+        // Optionally, redirect user (if using react-router)
+        // For example, you can use the `useNavigate` hook if needed.
+        // navigate('/account/login');
+    };
+
     // Using useEffect to run verifyToken when the component mounts
     useEffect(() => {
         if (!loggedInUser) {
@@ -113,7 +126,7 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
     }, []);
 
     return (
-        <UserContext.Provider value={{ loggedInUser, setLoggedInUser, login, signup, verifyToken }}>
+        <UserContext.Provider value={{ loggedInUser, setLoggedInUser, login, signup, verifyToken, logout }}>
             {children}
         </UserContext.Provider>
     );

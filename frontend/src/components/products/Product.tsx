@@ -1,12 +1,20 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useUserContext } from '../../context/UserContext';
+
+interface User {
+    _id: string;
+    name: string;
+}
 
 interface Review {
-    user: string; // Username or user ID
-    rating: number; // Rating given by the user (e.g., 1 to 5)
-    comment: string; // Review comment
-    createdAt: string; // Date of the review (ISO string format)
+    _id: string;
+    user: User;
+    rating: number;
+    comment: string;
+    product: string;
+    createdAt: string;
     updatedAt: string;
 }
 
@@ -18,84 +26,156 @@ interface Product {
     quantity: number;
     unit: number;
     totalCount: number;
-    reviews: Review[];
-    images: string[]; // Assuming a single image URL
+    images: string[];
 }
 
 export default function Product() {
     const { id } = useParams(); // Get the product ID from the URL
+    const { loggedInUser } = useUserContext();
     const [product, setProduct] = useState<Product>({
         _id: '',
         name: '',
         description: '',
         quantity: 0,
-        reviews: [],
         unit: 0,
         price: 0,
         totalCount: 0,
-        images: []
+        images: [],
     });
+    const [reviews, setReviews] = useState<Review[]>([]); // Separate state for reviews
+    const [rating, setRating] = useState<number>(0);
+    const [comment, setComment] = useState<string>('');
+    const [existingReview, setExistingReview] = useState<Review | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-    // Fetch product details by ID
+    // Fetch product details by ID and fetch reviews separately
     const fetchProduct = async () => {
-        const response = await axios.get(`/api/products/${id}`); // Replace with your API endpoint
-        setProduct(response.data.data); // Update state with product details
+        try {
+            const response = await axios.get(`/api/products/${id}`);
+            setProduct(response.data.data.product);
+
+            // Fetch reviews separately
+            setReviews(response.data.data.reviews); // Set reviews state from response
+
+            // Check if the logged-in user has already reviewed the product
+            const userReview = response.data.data.reviews.find((review: Review) => review.user._id === loggedInUser?._id);
+            setExistingReview(userReview || null);
+            if (userReview) {
+                setRating(userReview.rating);
+                setComment(userReview.comment);
+            }
+        } catch (error) {
+            console.error('Error fetching product', error);
+        }
+    };
+
+    const handleSubmitReview = async () => {
+        if (rating < 1 || rating > 5 || !comment.trim()) {
+            alert('Please provide a valid rating (1 to 5) and a comment.');
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            const reviewData = { rating, comment, product: id, user: loggedInUser?._id };
+            let response;
+            if (existingReview) {
+                // Update the review if it already exists
+                response = await axios.patch(`/api/reviews/${existingReview._id}`, reviewData);
+            } else {
+                // Create a new review if none exists
+                response = await axios.post('/api/reviews', reviewData);
+            }
+
+            // Reset form after submission
+            setRating(0);
+            setComment('');
+            setExistingReview(response.data.data); // Update the existing review state
+            fetchProduct(); // Refresh the product data with updated reviews
+        } catch (error) {
+            console.error('Error submitting review', error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     useEffect(() => {
         fetchProduct();
-    }, [id]);
+    }, [id, loggedInUser]);
 
     return (
         <div className="flex flex-col items-center gap-8 p-8 bg-palette-primary text-palette-highlight">
-            {/* Product Name */}
-            <h1 className="text-2xl font-bold">{product?.name}</h1>
-
-            {/* Image Carousel */}
-            <div className="w-full max-w-lg">
+            {/* Product Details */}
+            <h1 className="text-2xl font-bold">{product.name}</h1>
+            <div className="w-50 max-w-lg">
                 <div className="relative overflow-hidden">
                     <div className="flex transition-transform">
-                        {product?.images.map((image: string, index: number) => (
-                            <img
-                                key={index}
-                                src={image}
-                                alt={`Product Image ${index + 1}`}
-                                className="w-full object-cover"
-                            />
+                        {product.images.map((image, index) => (
+                            <img key={index} src={image} alt={`Product Image ${index + 1}`} className="w-full object-cover" />
                         ))}
                     </div>
                 </div>
-                {/* Add buttons for carousel navigation (if desired) */}
             </div>
-
-            {/* Product Details */}
-            <div className="text-center">
-                <p className="text-lg">{product?.description}</p>
-                <p className="text-xl font-bold mt-4">Price: ₹{product?.price}</p>
-                <p className="text-lg mt-2">Quantity: {product?.quantity} {product?.unit}</p>
-                <p className="text-lg mt-2">Total Count: {product?.totalCount}</p>
-            </div>
+            <p className="text-lg">{product.description}</p>
+            <p className="text-xl font-bold mt-4">Price: ₹{product.price}</p>
+            <p className="text-lg mt-2">Quantity: {product.quantity} {product.unit}</p>
+            <p className="text-lg mt-2">Total Count: {product.totalCount}</p>
 
             {/* Reviews Section */}
-            {product?.reviews && product.reviews.length > 0 && (
+            {reviews.length > 0 && (
                 <div className="mt-8 w-full max-w-lg text-left">
-                    <h2 className="text-xl font-bold">Reviews:</h2>
-                    <ul className="list-disc pl-4">
-                        {product.reviews.map((review, index) => (
-                            <li key={index} className="mb-4">
-                                <div className="font-semibold">{review.user}</div>
+                    <h2 className="text-3xl font-bold font-heading text-center">Reviews</h2>
+                    <section className="mt-4">
+                        {reviews.map((review, index) => (
+                            <article key={index} className="mb-4 shadow-highlight p-4 rounded-md bg-palette-neutral text-palette-accent">
+                                <div className="font-semibold">{review.user.name}</div>
                                 <div className="text-yellow-500">
-                                    {/* Display the rating as stars (assuming 5-star rating system) */}
                                     {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
                                 </div>
                                 <div className="italic">{review.comment}</div>
                                 <div className="text-sm text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</div>
-                            </li>
+                            </article>
                         ))}
-                    </ul>
+                    </section>
                 </div>
             )}
 
+            {/* Add or Edit Review Form */}
+            <div className="mt-8 w-full max-w-lg bg-palette-neutral text-palette-accent p-4 rounded-md shadow-highlight">
+                <h3 className="text-xl font-bold">{existingReview ? 'Edit Your Review' : 'Add a Review'}</h3>
+                <div className="flex flex-col gap-4 mt-4">
+                    <div>
+                        <label className="block text-lg">Rating</label>
+                        <input
+                            type="number"
+                            value={rating}
+                            onChange={(e) => setRating(Number(e.target.value))}
+                            min={1}
+                            max={5}
+                            className="w-full p-2 border text-palette-neutral"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-lg">Comment</label>
+                        <textarea
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            rows={4}
+                            className="w-full p-2 border text-palette-neutral"
+                            required
+                        />
+                    </div>
+                    <button
+                        onClick={handleSubmitReview}
+                        className="bg-palette-primary text-palette-neutral py-2 mt-4"
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }

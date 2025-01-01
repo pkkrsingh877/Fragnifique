@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useUserContext } from '../context/UserContext';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const { loggedInUser, logout } = useUserContext();
 
     return (
         <div className='flex flex-col shadow-highlight'>
@@ -28,10 +30,17 @@ const Navbar = () => {
             </nav>
             {/* Mobile Links (Hidden by default, shown when hamburger is clicked) */}
             <div className={`${isOpen ? 'block' : 'hidden'} w-full p-4 text-center top-full`}>
-                <Link to="/products" className="block mb-4">SHOP</Link>
+                <Link to="/products" className="block mb-4">PRODUCTS</Link>
                 <Link to="/about" className="block mb-4">ABOUT</Link>
-                <Link to="/account/login" className="block mb-4">LOGIN</Link>
-                <Link to="/account/signup" className="block mb-4">SIGNUP</Link>
+                {loggedInUser ? (
+                    // Add onClick handler for logout
+                    <Link to="#" onClick={logout} className="block mb-4">LOGOUT</Link>
+                ) : (
+                    <>
+                        <Link to="/account/login" className="block mb-4">LOGIN</Link>
+                        <Link to="/account/signup" className="block mb-4">SIGNUP</Link>
+                    </>
+                )}
             </div>
         </div>
     );
