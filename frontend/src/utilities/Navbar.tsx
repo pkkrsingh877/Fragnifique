@@ -23,22 +23,22 @@ const Navbar = () => {
 
                 {/* Cart Link (Always visible on mobile and desktop) */}
                 <div className="flex items-center">
-                    <Link to="/cart" className="ml-4">
+                    <Link to="#" className="ml-4">
                         CART
                     </Link>
                 </div>
             </nav>
             {/* Mobile Links (Hidden by default, shown when hamburger is clicked) */}
             <div className={`${isOpen ? 'block' : 'hidden'} w-full p-4 text-center top-full`}>
-                <Link to="/products" className="block mb-4">PRODUCTS</Link>
-                <Link to="/about" className="block mb-4">ABOUT</Link>
+                <Link to="/products" className="block mb-4" onClick={() => setIsOpen(false)}>PRODUCTS</Link>
+                <Link to="#" className="block mb-4" onClick={() => setIsOpen(false)}>ABOUT</Link>
                 {loggedInUser ? (
                     // Add onClick handler for logout
-                    <Link to="#" onClick={logout} className="block mb-4">LOGOUT</Link>
+                    <Link to="#" className="block mb-4" onClick={() => { logout(); setIsOpen(false); }}>LOGOUT</Link>
                 ) : (
                     <>
-                        <Link to="/account/login" className="block mb-4">LOGIN</Link>
-                        <Link to="/account/signup" className="block mb-4">SIGNUP</Link>
+                        <Link to="/account/login" className="block mb-4" onClick={() => setIsOpen(false)}>LOGIN</Link>
+                        <Link to="/account/signup" className="block mb-4" onClick={() => setIsOpen(false)}>SIGNUP</Link>
                     </>
                 )}
             </div>

@@ -65,3 +65,27 @@ export const getProducts = async (req, res) => {
         });
     }
 };
+
+
+export const getRandomProducts = async (req, res) => {
+    try {
+        // Logic to fetch products from the database (e.g., using a model)
+        const products = await Product.aggregate([
+            { $sample: { size: 10 } } // This fetches 10 random products
+        ]);
+
+        // Formulated response for success
+        res.status(200).json({
+            success: true,
+            message: "Products fetched successfully",
+            data: products
+        });
+    } catch (error) {
+        // Formulated response for error
+        res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message // Optional: include error details for debugging
+        });
+    }
+};
