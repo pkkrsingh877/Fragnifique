@@ -54,7 +54,7 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
 
     const login = async (user: LoginUser): Promise<LoginResponse> => {
         try {
-            const response = await axios.post(`/api/users/login`, user);
+            const response = await axios.post<any>(`/api/users/login`, user);
             if (response) {
                 console.log('Login successful:', response.data);
                 const { _id, name, email, isSeller } = response.data.data;
@@ -70,7 +70,7 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
 
     const signup = async (user: SignupUser): Promise<SignupResponse> => {
         try {
-            const response = await axios.post(`/api/users/signup`, user);
+            const response = await axios.post<any>(`/api/users/signup`, user);
             if (response) {
                 console.log('Signup successful:', response.data);
                 const { _id, name, email, isSeller } = response.data.data;
@@ -87,7 +87,7 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
     const verifyToken = async (): Promise<boolean> => {
         try {
             const token = Cookies.get('token');
-            const response = await axios.get(`/api/users/verifyToken`, {
+            const response = await axios.get<any>(`/api/users/verifyToken`, {
                 headers: {
                     Authorization: `Bearer ${token}` // Include token if necessary
                 }

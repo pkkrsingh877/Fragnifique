@@ -15,7 +15,8 @@ export default function Products() {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`/api/products`);
+            // Define the expected shape of the response data
+            const response = await axios.get<any>(`/api/products`);
             if (response.data.success) {
                 setProducts(response.data.data); // Assuming `data` is an array of products
             } else {

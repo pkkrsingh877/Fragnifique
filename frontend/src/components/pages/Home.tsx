@@ -18,7 +18,7 @@ export default function Home() {
     // Fetch random products from the server
     const fetchRandomProducts = async () => {
         try {
-            const response = await axios.get(`/api/products/random`);
+            const response = await axios.get<any>(`/api/products/random`);
             if (response.data.success) {
                 setRandomProducts(response.data.data); // Assuming `data` is an array of 10 random products
             } else {

@@ -57,7 +57,7 @@ export default function CreateProduct() {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post(`/api/products`, product);
+            const response = await axios.post<any>(`/api/products`, product);
             if (response.data.success) {
                 navigate('/');
             }

@@ -53,7 +53,7 @@ export default function Product() {
     // Fetch product details by ID and fetch reviews separately
     const fetchProduct = async () => {
         try {
-            const response = await axios.get(`/api/products/${id}`);
+            const response = await axios.get<any>(`/api/products/${id}`);
             setProduct(response.data.data.product);
 
             // Fetch reviews separately
@@ -86,16 +86,16 @@ export default function Product() {
             let response;
             if (existingReview) {
                 // Update the review if it already exists
-                response = await axios.patch(`/api/reviews/${existingReview._id}`, reviewData);
+                response = await axios.patch<any>(`/api/reviews/${existingReview._id}`, reviewData);
             } else {
                 // Create a new review if none exists
-                response = await axios.post('/api/reviews', reviewData);
+                response = await axios.post<any>('/api/reviews', reviewData);
             }
 
             // Reset form after submission
             setRating(0);
             setComment('');
-            setExistingReview(response.data.data); // Update the existing review state
+            setExistingReview(response.data.data as Review); // Update the existing review state
             fetchProduct(); // Refresh the product data with updated reviews
         } catch (error) {
             console.error('Error submitting review', error);
