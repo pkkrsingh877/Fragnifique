@@ -56,13 +56,11 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
         try {
             const response = await axios.post<any>(`/api/users/login`, user);
             if (response) {
-                console.log('Login successful:', response.data);
                 const { _id, name, email, isSeller } = response.data.data;
                 setLoggedInUser({ _id, name, email, isSeller });
                 return { success: true };
             }
         } catch (error) {
-            console.error('Login error:', error);
             return { success: false, error };
         }
         return { success: false, error: 'Unknown error' };
@@ -72,13 +70,11 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
         try {
             const response = await axios.post<any>(`/api/users/signup`, user);
             if (response) {
-                console.log('Signup successful:', response.data);
                 const { _id, name, email, isSeller } = response.data.data;
                 setLoggedInUser({ _id, name, email, isSeller });
                 return { success: true };
             }
         } catch (error) {
-            console.error('Signup error:', error);
             return { success: false, error };
         }
         return { success: false, error: 'Unknown error' };
@@ -99,7 +95,6 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
                 return true;
             }
         } catch (error) {
-            console.error('Token verification error:', error);
             return false;
         }
         return false;

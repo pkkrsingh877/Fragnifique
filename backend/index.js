@@ -3,9 +3,14 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import 'dotenv/config.js';
 import cookieParser from 'cookie-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Resolve `__dirname` in ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Connect to MongoDB
-
 const dbConnection = async () => {
     try {
         await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/fragnifique');
@@ -14,10 +19,9 @@ const dbConnection = async () => {
         console.log('MongoDB Connection Failed: ', error);
         process.exit(1);
     }
-}
+};
 
 dbConnection();
-
 
 import userRoutes from './routes/user.js';
 import productRoutes from './routes/product.js';
@@ -25,39 +29,35 @@ import reviewRoutes from './routes/review.js';
 
 const app = express();
 
-
 app.use(cookieParser());
-// Cors Middleware
 app.use(cors({
-    origin: 'http://localhost:5173', // Replace with your frontend's URL
-    credentials: true, // Allow cookies/credentials
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow the methods your app needs
-    allowedHeaders: ['Content-Type', 'Authorization'], // Specify which headers are allowed in the request
+    origin: 'fragnifique.prabhatkumar.site', // Replace with your frontend's URL
+    credentials: true,
 }));
-
-// Handle preflight request explicitly for certain methods
-app.options('*', (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173'); // Match the origin
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Allowed methods
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Allowed headers
-    res.setHeader('Access-Control-Allow-Credentials', 'true'); // Allow credentials
-    res.status(200).end(); // End the response to the OPTIONS request
-});
-
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Mounting API routes
+// Serve static assets from the dist folder
+const distPath = path.resolve(__dirname, '../frontend/dist');
+app.use(express.static(distPath));
+
+// API routes
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/reviews', reviewRoutes);
 
+// Catch-all route to serve the index.html for Single Page Applications (SPA)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+});
+
+// Fallback route for the root path
 app.get('/', (req, res) => {
     res.status(301).send('There is nothing for me to serve on this route');
 });
 
+// Start the server
 app.listen(process.env.PORT || 5000, () => {
     console.log(`Server is running at PORT ${process.env.PORT || 5000}`);
 });
