@@ -26,6 +26,7 @@ dbConnection();
 import userRoutes from './routes/user.js';
 import productRoutes from './routes/product.js';
 import reviewRoutes from './routes/review.js';
+import profileRoutes from './routes/profile.js';
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use(express.static(distPath));
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/profile', profileRoutes);
 
 // Catch-all route to serve the index.html for Single Page Applications (SPA)
 app.get('*', (req, res) => {

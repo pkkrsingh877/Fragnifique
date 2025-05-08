@@ -10,6 +10,8 @@ import Signup from './components/account/Signup';
 import CreateProduct from './components/products/CreateProduct';
 import Products from './components/products/Products';
 import Product from './components/products/Product';
+import Profile from './components/account/Profile';
+import UpdateProfile from './components/account/UpdateProfile';
 
 // Layout component
 function Layout({ children }: { children: ReactNode }) {
@@ -34,6 +36,8 @@ function App() {
         <Route path="/products" element={<Layout><Products /></Layout>}></Route>
         <Route path="/products/create" element={<Layout><CreateProduct /></Layout>}></Route>
         <Route path="/products/:id" element={<Layout><Product /></Layout>}></Route>
+        <Route path="/profile" element={<Layout><Profile /></Layout>} />
+        <Route path="/profile/update" element={<Layout><UpdateProfile /></Layout>} />
       </Routes>
     </BrowserRouter>
   );

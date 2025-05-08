@@ -18,6 +18,7 @@ interface UserContextType {
     signup: (user: SignupUser) => Promise<SignupResponse>;
     verifyToken: () => Promise<boolean>;
     logout: () => void; // Add logout method type
+    updateProfile: (updatedUser: Partial<User>) => Promise<UpdateProfileResponse>;
 }
 
 interface LoginUser {
@@ -41,6 +42,12 @@ interface SignupResponse {
     success: boolean;
     error?: unknown;
 }
+
+interface UpdateProfileResponse {
+    success: boolean;
+    error?: unknown;
+}
+
 
 // Create Context
 export const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -79,6 +86,29 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
         }
         return { success: false, error: 'Unknown error' };
     };
+
+    const updateProfile = async (updatedUser: Partial<User>): Promise<UpdateProfileResponse> => {
+        if (!loggedInUser) {
+            return { success: false, error: 'User not logged in' };
+        }
+    
+        try {
+            const response = await axios.patch(`/api/profile/${loggedInUser._id}`, updatedUser);
+            const updatedData: User = (response.data as { data: User }).data;
+    
+            setLoggedInUser((prevUser) => ({
+                ...prevUser!,
+                ...updatedData,
+            }));
+    
+            return { success: true };
+        } catch (error) {
+            return { success: false, error };
+        }
+    };
+    
+    
+
 
     const verifyToken = async (): Promise<boolean> => {
         try {
@@ -121,7 +151,7 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
     }, []);
 
     return (
-        <UserContext.Provider value={{ loggedInUser, setLoggedInUser, login, signup, verifyToken, logout }}>
+        <UserContext.Provider value={{ loggedInUser, setLoggedInUser, login, signup, verifyToken, logout, updateProfile }}>
             {children}
         </UserContext.Provider>
     );
