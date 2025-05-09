@@ -1,15 +1,6 @@
 import { useCartContext } from "../../context/CartContext";
-import { useUserContext } from "../../context/UserContext";
+
 export default function Cart() {
-    const { loggedInUser } = useUserContext();
-    if (!loggedInUser) {
-        return (
-            <div className="container mx-auto px-8">
-                <h1 className="text-center font-heading text-3xl my-8">Your Cart</h1>
-                <p className="text-center text-lg text-palette-highlight">Please log in to view your cart.</p>
-            </div>
-        );
-    }
 
     const { cartItems, removeFromCart, clearCart } = useCartContext();
     // Calculate total price

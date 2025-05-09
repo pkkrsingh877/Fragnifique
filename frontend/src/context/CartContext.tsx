@@ -28,13 +28,26 @@ export const CartContextProvider = ({ children }: CartProviderProps) => {
 
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     // Load cart items on mount
-    useEffect(() => {
-        axios.get<{ products: CartItem[] }>(`${API_URL}/`)
-            .then(response => setCartItems(response.data.products))
-            .catch(error => console.error("Error fetching cart:", error));
+    const loadCartItems = async () => {
+        try {
+            const data = await axios.get<{ products: CartItem[] }>(`${API_URL}/`)
+            const res = await data.data.products;
+
+            if (res) {
+                setCartItems(res);
+            }
+
             console.log("Cart items loaded:", cartItems);
             toast.success("Cart items loaded successfully!");
-    }, []);
+
+        } catch (error) {
+            console.error("Error loading cart items:", error);
+            toast.error("Failed to load cart items. Please try again.");
+        }
+    }
+    useEffect(() => {
+        loadCartItems();
+    }, []); // Load cart items when user logs in
 
     // Add item to cart & save to DB
     const addToCart = async (item: CartItem) => {
