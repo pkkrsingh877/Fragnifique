@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { useCartContext } from "../../context/CartContext";
 import { useUserContext } from "../../context/UserContext";
+const API_URL = "http://localhost:9999/api/orders";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 export default function Cart() {
     const { loggedInUser } = useUserContext();
@@ -22,6 +25,28 @@ export default function Cart() {
         (sum, item) => sum + item.price * item.quantity,
         0
     );
+
+    const makeOrder = async () => {
+        try {
+            const orderData = {
+                user: loggedInUser!._id,
+                products: cartItems.map(item => ({
+                  product: item.productId, // 👈 key fix here
+                  quantity: item.quantity,
+                })),
+                totalAmount: totalPrice
+              };
+              
+            await axios.post(`${API_URL}/`, orderData);
+
+            toast.success("Order placed successfully!");
+            clearCart();
+            
+        } catch (error) {
+            console.error("Error placing order:", error);
+            toast.error("Failed to place order. Please try again.");
+        }
+    };
 
     return (
         <div className="container mx-auto px-8">
@@ -65,15 +90,7 @@ export default function Cart() {
                             ))}
                         </ul>
                     </div>
-
-                    {/* 💰 Total Price & Order Button */}
-                    <div className="flex justify-between items-center mt-6 bg-palette-primary p-4 rounded-lg shadow-md">
-                        <h2 className="text-xl font-bold">Total: ₹{totalPrice}</h2>
-                        <button className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition">
-                            Order Now
-                        </button>
-                    </div>
-
+                    
                     {/* 🧹 Clear Cart Button */}
                     <div className="flex justify-center mt-6">
                         <button
@@ -81,6 +98,14 @@ export default function Cart() {
                             className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition mb-4"
                         >
                             Clear Cart
+                        </button>
+                    </div>
+
+                    {/* 💰 Total Price & Order Button */}
+                    <div className="flex justify-between items-center mt-6 bg-palette-primary p-4 rounded-lg shadow-md">
+                        <h2 className="text-xl font-bold">Total: ₹{totalPrice}</h2>
+                        <button className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition" onClick={makeOrder}>
+                            Order Now
                         </button>
                     </div>
                 </>
