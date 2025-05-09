@@ -30,6 +30,7 @@ export const addToCart = async (req, res) => {
 export const getCart = async (req, res) => {
     try {
         const cart = await Cart.findOne({ user: req.user.id }).populate("products.product");
+        console.log(cart.products);
         res.status(200).json({ success: true, message: "Cart fetched successfully", data: cart });
     } catch (error) {
         res.status(500).json({ success: false, message: "Server error", error: error.message });

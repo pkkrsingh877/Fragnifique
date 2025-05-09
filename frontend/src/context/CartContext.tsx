@@ -1,6 +1,7 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+
 const API_URL = "http://localhost:9999/api/cart"; // Adjust based on backend URL
 
 interface CartItem {
@@ -16,6 +17,8 @@ interface CartContextType {
     addToCart: (item: CartItem) => void;
     removeFromCart: (productId: string) => void;
     clearCart: () => void;
+    loadCartItems: () => Promise<void>;
+    loading: boolean;
 }
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -25,34 +28,49 @@ interface CartProviderProps {
 }
 
 export const CartContextProvider = ({ children }: CartProviderProps) => {
-
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
-    // Load cart items on mount
+    const [loading, setLoading] = useState(true); // 🟡 Add loading state
+
     const loadCartItems = async () => {
+        setLoading(true); 
         try {
-            const data = await axios.get<{ products: CartItem[] }>(`${API_URL}/`)
-            const res = await data.data.products;
+            const data = await axios.get<{ products: CartItem[] }>(`${API_URL}/`);
+            const res = data.data.products;
 
             if (res) {
                 setCartItems(res);
+                localStorage.setItem("cartItems", JSON.stringify(res)); // 🟢 Update localStorage
+                toast.success("Cart items loaded successfully!");
             }
-
-            console.log("Cart items loaded:", cartItems);
-            toast.success("Cart items loaded successfully!");
-
         } catch (error) {
             console.error("Error loading cart items:", error);
             toast.error("Failed to load cart items. Please try again.");
+        } finally {  
+            setLoading(false); 
         }
-    }
-    useEffect(() => {
-        loadCartItems();
-    }, []); // Load cart items when user logs in
+    };
 
-    // Add item to cart & save to DB
+    // 🔁 On mount: Load from localStorage first, then backend
+    useEffect(() => {
+        const storedCart = localStorage.getItem("cartItems");
+        if (storedCart) {
+            setCartItems(JSON.parse(storedCart));
+        }
+
+        loadCartItems(); // fetch from backend
+    }, []);
+
+    // 🧠 Every cart change → sync to localStorage
+    useEffect(() => {
+        localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    }, [cartItems]);
+
     const addToCart = async (item: CartItem) => {
         try {
-            await axios.post(`${API_URL}/`, { product: item.productId, quantity: item.quantity });
+            await axios.post(`${API_URL}/`, {
+                product: item.productId,
+                quantity: item.quantity,
+            });
             setCartItems(prev => [...prev, item]);
             toast.success(`${item.name} added to cart!`);
         } catch (error) {
@@ -61,23 +79,22 @@ export const CartContextProvider = ({ children }: CartProviderProps) => {
         }
     };
 
-    // Remove item from cart in DB
     const removeFromCart = async (productId: string) => {
         try {
             await axios.delete(`${API_URL}/${productId}`);
             setCartItems(prev => prev.filter(item => item.productId !== productId));
             toast.success(`Item removed from cart!`);
         } catch (error) {
-            toast.error("Failed to remove item from cart. Please try again.");
             console.error("Error removing from cart:", error);
+            toast.error("Failed to remove item from cart. Please try again.");
         }
     };
 
-    // Clear cart in DB
     const clearCart = async () => {
         try {
             await axios.delete(`${API_URL}/clear/`);
             setCartItems([]);
+            localStorage.removeItem("cartItems"); // 🗑 clear localStorage too
             toast.success("Cart cleared!");
         } catch (error) {
             console.error("Error clearing cart:", error);
@@ -86,7 +103,9 @@ export const CartContextProvider = ({ children }: CartProviderProps) => {
     };
 
     return (
-        <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart }}>
+        <CartContext.Provider
+            value={{ cartItems, addToCart, removeFromCart, clearCart, loadCartItems, loading }}
+        >
             {children}
         </CartContext.Provider>
     );
