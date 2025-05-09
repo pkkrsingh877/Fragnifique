@@ -21,7 +21,7 @@ export const createOrder = async (req, res) => {
 
 export const getOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ user: req.user.id }).populate("products.product");
+        const orders = await Order.find({ user: req.user.id }).populate("products.product").sort({ createdAt: -1 }).limit(5);
         res.status(200).json({
             success: true,
             message: "Orders fetched successfully",

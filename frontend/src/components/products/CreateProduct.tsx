@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../../context/UserContext';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 axios.defaults.withCredentials = true;
 
 interface Product {
@@ -59,9 +60,15 @@ export default function CreateProduct() {
         try {
             const response = await axios.post<any>(`/api/products`, product);
             if (response.data.success) {
+                toast.success('Product created successfully!');
                 navigate('/');
             }
         } catch (error) {
+            if(loggedInUser?.isSeller){
+                toast.error('Product creation failed. Please try again.');
+            }else{
+                toast.error('You are not a seller!');
+            }
             console.log(error);
         }
     };

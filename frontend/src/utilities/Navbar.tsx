@@ -31,6 +31,8 @@ const Navbar = () => {
             {/* Mobile Links (Hidden by default, shown when hamburger is clicked) */}
             <div className={`${isOpen ? 'block' : 'hidden'} w-full p-4 text-center top-full`}>
                 <Link to="/products" className="block mb-4" onClick={() => setIsOpen(false)}>PRODUCTS</Link>
+                <Link to="/products/me" className="block mb-4" onClick={() => setIsOpen(false)}>MY PRODUCTS</Link>
+                <Link to="/orders" className="block mb-4" onClick={() => setIsOpen(false)}>ORDERS</Link>
                 <Link to="/profile" className="block mb-4" onClick={() => setIsOpen(false)}>PROFILE</Link>
                 <Link to="/about" className="block mb-4" onClick={() => setIsOpen(false)}>ABOUT</Link>
                 {loggedInUser ? (

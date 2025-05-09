@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useUserContext } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function UpdateProfile() {
     const { loggedInUser, updateProfile } = useUserContext();
@@ -38,7 +39,9 @@ export default function UpdateProfile() {
         const result = await updateProfile(formData); // You define this
         if (result.success) {
             navigate('/profile'); // or wherever you want to take them
+            toast.success('Profile updated successfully!');
         } else {
+            toast.error('Failed to update profile.');
             console.error('Update failed:', result.error);
         }
     };

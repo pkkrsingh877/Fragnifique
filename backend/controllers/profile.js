@@ -3,7 +3,7 @@ import User from '../models/user.js';
 
 const updateProfile = async (req, res) => {
     try {
-        const userId = req.id; // Set by auth middleware
+        const userId = req.user.id; // Set by auth middleware
         const { name, email, isSeller } = req.body;
 
         const updatedUser = await User.findByIdAndUpdate(

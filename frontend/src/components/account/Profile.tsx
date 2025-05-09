@@ -20,7 +20,7 @@ export default function Profile() {
             <p className="text-lg">
                 <strong>Role:</strong> {loggedInUser.isSeller ? 'Seller 🛍️' : 'Customer 🙋‍♂️'}
             </p>
-            <Link to="/profile/update" className="block mb-4">Update Profile</Link>
+            <Link to="/profile/update" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 transition">Update Profile</Link>
         </div>
     );
 }
