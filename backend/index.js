@@ -5,6 +5,7 @@ import 'dotenv/config.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import morgan from 'morgan';
 
 // Resolve `__dirname` in ES module
 const __filename = fileURLToPath(import.meta.url);
@@ -27,6 +28,8 @@ import userRoutes from './routes/user.js';
 import productRoutes from './routes/product.js';
 import reviewRoutes from './routes/review.js';
 import profileRoutes from './routes/profile.js';
+import orderRoutes from './routes/order.js';
+import cartRoutes from './routes/cart.js';
 
 const app = express();
 
@@ -35,6 +38,7 @@ app.use(cors({
     origin: 'fragnifique.prabhatkumar.site', // Replace with your frontend's URL
     credentials: true,
 }));
+app.use(morgan('dev'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -48,6 +52,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/cart', cartRoutes);
 
 // Catch-all route to serve the index.html for Single Page Applications (SPA)
 app.get('*', (req, res) => {

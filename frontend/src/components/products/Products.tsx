@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-interface Product {
+export interface Product {
     _id: string;
     name: string;
     description: string;

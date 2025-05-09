@@ -12,6 +12,10 @@ import Products from './components/products/Products';
 import Product from './components/products/Product';
 import Profile from './components/account/Profile';
 import UpdateProfile from './components/account/UpdateProfile';
+import Cart from './components/cart/Cart';
+
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Layout component
 function Layout({ children }: { children: ReactNode }) {
@@ -27,6 +31,7 @@ function Layout({ children }: { children: ReactNode }) {
 function App() {
   return (
     <BrowserRouter>
+      <ToastContainer position='bottom-right' autoClose={3000} />
       <Routes>
         <Route path="/" element={<Layout><Home /></Layout>} />
         <Route path="/about" element={<Layout><About /></Layout>} />
@@ -38,6 +43,7 @@ function App() {
         <Route path="/products/:id" element={<Layout><Product /></Layout>}></Route>
         <Route path="/profile" element={<Layout><Profile /></Layout>} />
         <Route path="/profile/update" element={<Layout><UpdateProfile /></Layout>} />
+        <Route path="/cart" element={<Layout><Cart /></Layout>} />
       </Routes>
     </BrowserRouter>
   );

@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useUserContext } from '../../context/UserContext';
+import { useCartContext } from '../../context/CartContext';
 
 interface User {
     _id: string;
@@ -32,6 +33,7 @@ interface Product {
 export default function Product() {
     const { id } = useParams(); // Get the product ID from the URL
     const { loggedInUser } = useUserContext();
+    const { addToCart } = useCartContext(); // Assuming you have a context for managing the cart
     const [product, setProduct] = useState<Product>({
         _id: '',
         name: '',
@@ -172,6 +174,7 @@ export default function Product() {
                     >
                         &#8594;
                     </button>
+
                 </section>
 
                 {/* Product Description */}
@@ -198,7 +201,11 @@ export default function Product() {
                     <button onClick={() => handleShare('twitter')} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                         Share on Twitter
                     </button>
+                    <button className=" bg-black text-white px-4 py-2 rounded-md hover:bg-black" onClick={() => addToCart({ productId: product._id, name: product.name, price: product.price, quantity: 1, image: product.images[0] })}>
+                        Add to Cart
+                    </button>
                 </div>
+
             </div>
 
             {/* Reviews Section */}

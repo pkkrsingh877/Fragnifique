@@ -91,9 +91,11 @@ export const UserContextProvider = ({ children }: UserProviderProps) => {
         if (!loggedInUser) {
             return { success: false, error: 'User not logged in' };
         }
+        console.log(updatedUser);
     
         try {
-            const response = await axios.patch(`/api/profile/${loggedInUser._id}`, updatedUser);
+            const response = await axios.patch<any>(`/api/profile/${loggedInUser._id}`, updatedUser);
+            console.log(updatedUser);
             const updatedData: User = (response.data as { data: User }).data;
     
             setLoggedInUser((prevUser) => ({

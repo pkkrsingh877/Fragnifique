@@ -1,4 +1,5 @@
 import { useUserContext } from '../../context/UserContext';
+import { Link } from 'react-router-dom';
 
 export default function Profile() {
     const { loggedInUser } = useUserContext();
@@ -19,6 +20,7 @@ export default function Profile() {
             <p className="text-lg">
                 <strong>Role:</strong> {loggedInUser.isSeller ? 'Seller 🛍️' : 'Customer 🙋‍♂️'}
             </p>
+            <Link to="/profile/update" className="block mb-4">Update Profile</Link>
         </div>
     );
 }
