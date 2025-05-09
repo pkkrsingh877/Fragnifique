@@ -1,8 +1,7 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-
-const API_URL = "http://localhost:9999/api/cart"; // Adjust based on backend URL
+const API_URL = `${import.meta.env.VITE_API_URL}/cart`;
 
 interface CartItem {
     productId: string;
@@ -34,7 +33,7 @@ export const CartContextProvider = ({ children }: CartProviderProps) => {
     const loadCartItems = async () => {
         setLoading(true); 
         try {
-            const data = await axios.get<{ products: CartItem[] }>(`${API_URL}/`);
+            const data = await axios.get<{ products: CartItem[] }>(`${API_URL}`);
             const res = data.data.products;
 
             if (res) {
@@ -67,7 +66,7 @@ export const CartContextProvider = ({ children }: CartProviderProps) => {
 
     const addToCart = async (item: CartItem) => {
         try {
-            await axios.post(`${API_URL}/`, {
+            await axios.post(`/cart`, {
                 product: item.productId,
                 quantity: item.quantity,
             });
