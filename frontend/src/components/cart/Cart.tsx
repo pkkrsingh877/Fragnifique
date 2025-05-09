@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useCartContext } from "../../context/CartContext";
 import { useUserContext } from "../../context/UserContext";
-const API_URL = `${import.meta.env.VITE_API_URL}/api/cart`;
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -37,7 +36,7 @@ export default function Cart() {
                 totalAmount: totalPrice
               };
               
-            await axios.post(`${API_URL}/`, orderData);
+            await axios.post(`/api/orders/`, orderData);
 
             toast.success("Order placed successfully!");
             clearCart();

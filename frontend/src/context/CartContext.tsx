@@ -1,7 +1,6 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-const API_URL = `${import.meta.env.VITE_API_URL}/cart`;
 
 interface CartItem {
     productId: string;
@@ -33,7 +32,7 @@ export const CartContextProvider = ({ children }: CartProviderProps) => {
     const loadCartItems = async () => {
         setLoading(true); 
         try {
-            const data = await axios.get<{ products: CartItem[] }>(`${API_URL}`);
+            const data = await axios.get<{ products: CartItem[] }>(`/api/cart/`);
             const res = data.data.products;
 
             if (res) {
@@ -66,7 +65,7 @@ export const CartContextProvider = ({ children }: CartProviderProps) => {
 
     const addToCart = async (item: CartItem) => {
         try {
-            await axios.post(`/cart`, {
+            await axios.post(`/api/cart`, {
                 product: item.productId,
                 quantity: item.quantity,
             });
@@ -80,7 +79,7 @@ export const CartContextProvider = ({ children }: CartProviderProps) => {
 
     const removeFromCart = async (productId: string) => {
         try {
-            await axios.delete(`${API_URL}/${productId}`);
+            await axios.delete(`/api/cart/${productId}`);
             setCartItems(prev => prev.filter(item => item.productId !== productId));
             toast.success(`Item removed from cart!`);
         } catch (error) {
@@ -91,7 +90,7 @@ export const CartContextProvider = ({ children }: CartProviderProps) => {
 
     const clearCart = async () => {
         try {
-            await axios.delete(`${API_URL}/clear/`);
+            await axios.delete(`/api/cart/clear/`);
             setCartItems([]);
             localStorage.removeItem("cartItems"); // 🗑 clear localStorage too
             toast.success("Cart cleared!");
