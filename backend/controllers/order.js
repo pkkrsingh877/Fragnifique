@@ -3,8 +3,10 @@ import Order from "../models/order.js";
 export const createOrder = async (req, res) => {
     try {
         const { user, products, totalAmount } = req.body;
+        console.log(req.body)
         const order = new Order({ user, products, totalAmount });
         await order.save();
+        console.log("Order created:", order);
 
         res.status(201).json({
             success: true,
@@ -12,6 +14,7 @@ export const createOrder = async (req, res) => {
             data: order
         });
     } catch (error) {
+        console.error("Error creating order:", error);
         res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };
