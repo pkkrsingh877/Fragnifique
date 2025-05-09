@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useCartContext } from "../../context/CartContext";
 import { useUserContext } from "../../context/UserContext";
-const API_URL = `${import.meta.env.VITE_API_URL}/cart`;
+const API_URL = `https://www.fragnifique.prabhatkumar.site/api/cart`;
 import { toast } from "react-toastify";
 import axios from "axios";
 
